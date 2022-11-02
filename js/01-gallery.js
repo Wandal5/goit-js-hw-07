@@ -1,18 +1,47 @@
-import { galleryItems } from './gallery-items.js';
+import { galleryItems } from "./gallery-items.js";
+// Change code below this line
+const galleryImg = document.querySelector('.gallery');
 
-import SimpleLightbox from 'simplelightbox';
-import templateFunction from '../templates/item-markup.hbs';
-import 'simplelightbox/dist/simple-lightbox.min.css';
+const imagesMarkup = galleryItems
+.map(({preview,original,description}) => 
+`<div class = "gallery__item">
+<a class = "gallery__link" href = "${original}">
+<img class = "gallery__image"
+  src = "${preview}"
+  data-source = "${original}"
+  alt = "${description}"/>
+</a></div>`).join("");
 
-const galleryRefs = document.querySelector('.gallery');
+galleryImg.insertAdjacentHTML('afterbegin', imagesMarkup);
+galleryImg.addEventListener('click', onImagesClick);
 
-(function createMarkup() {
-  const itemMarkup = galleryItems.map(templateFunction).join('');
-  galleryRefs.insertAdjacentHTML('beforeend', itemMarkup);
-})();
+function onImagesClick(event) {
+    event.preventDefault();
 
-new SimpleLightbox('.gallery', {
-  captions: true,
-  captionsData: 'alt',
-  captionDelay: 250,
+    if (!event.target.classList.contains('gallery__image')) {
+    return;
+ }
+
+ galleryImg.addEventListener('click', onImagesClick);
+
+const modalWindow = basicLightbox.create(`<div class = "modal">
+ <img src = "${event.target.dataset.source}" width = "800" height = "600">
+</div>`, {
+    onShow: (modalWindow) => {
+        window.addEventListener('keydown', onKeyboardClick);
+        console.log('onShow', modalWindow);
+    },
+    onClose: (modalWindow) => {
+        window.removeEventListener('keydown', onKeyboardClick);
+        console.log('onClose', modalWindow);
+    }
 });
+
+modalWindow.show()
+function onKeyboardClick (event) {
+if(event.code === 'Escape') {
+    modalWindow.close();
+  };
+ };
+};
+console.log(galleryItems);
